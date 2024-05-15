@@ -1,52 +1,36 @@
 <script>
-import InputText from 'primevue/inputtext';
-import Button from 'primevue/button';
-import Card from 'primevue/card';
-import io from 'socket.io-client';
-
 export default {
     data() {
         return {
-            socket: {},
-            msg: '',
-            items: []
+            room: ''
         };
     },
 
     methods: {
-        sendMsg() {
-            if (this.msg !== '') {
-                this.socket.emit('msg', this.msg);
-                this.msg = '';
+        joinRoom() {
+            if (this.room !== '') {
+                // console.log(this.room);
+                this.$router.push(`/room/${this.room}`);
+                this.room = '';
             }
         }
     },
 
-    mounted() {
-        this.socket = io('http://localhost:8000');
-        this.socket.on('reply', (msg) => {
-            this.items.unshift({ message: msg });
-        });
-    }
+    mounted() {}
 };
 </script>
 
 <template>
-    <div class="m-auto p-4 surface-hover h-screen">
-        <div class="flex">
-            <InputText v-model="msg" placeholder="Message..." class="flex-1" @keyup.enter="sendMsg()" />
-            <Button label="Send" class="ml-2" @click="sendMsg()" />
+    <div class="m-auto p-4 surface-hover h-screen text-center flex justify-content-center align-content-center">
+        <div class="lg:w-4 flex flex-column justify-content-center">
+            <h1>Chat application using Socket.IO</h1>
+            <Card class="mt-4">
+                <template #content>
+                    <InputText v-model="room" placeholder="Join room..." class="w-full flex-1 h-4rem" />
+                    <br />
+                    <Button label="Join" class="mt-3 w-full" @click="joinRoom" />
+                </template>
+            </Card>
         </div>
-        <Card class="mt-4">
-            <template #content>
-                <div v-for="(item, index) in items" :key="item.id">
-                    <p class="m-0">
-                        {{ item.message }}
-                    </p>
-
-                    <hr v-if="index !== items.length - 1" :class="{ 'border-primary': index === 0 }" />
-                </div>
-            </template>
-        </Card>
     </div>
 </template>
